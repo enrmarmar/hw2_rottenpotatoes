@@ -7,7 +7,10 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @movies = Movie.all
+    field = params[:sort] #retrieve sort field
+    flash[:notice] = "Parameter #{params} was passed to the controller" #for debugging purposes
+    @movies = Movie.order(field) #sort by field
+    @sort_column = field # pass back the field to the view
   end
 
   def new
