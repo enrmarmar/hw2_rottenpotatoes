@@ -7,13 +7,15 @@ class MoviesController < ApplicationController
   end
 
   def index
-     
-    @sort = params[:sort] #retrieve sort field
+    
+    @sort = params[:sort] || session[:sort] #retrieve sort field
+    session[:sort] = @sort #stores in session[]
+    
     @all_ratings = Movie.all_ratings
-    ratings = @all_ratings
     if params[:ratings] != nil
-      ratings = params[:ratings].keys
+      session[:ratings] = params[:ratings].keys
     end
+    ratings = session[:ratings] || @all_ratings
     
     @ratings_checked = Hash.new
     @all_ratings.each do |rating|
@@ -22,18 +24,12 @@ class MoviesController < ApplicationController
         @ratings_checked [rating] = 0
       end
     end
+    flash[:notice] = @ratings_checked
     
     
     #flash[:notice] = "Parameter #{params} was passed to the controller" #for debugging purposes
-    flash[:notice] = ratings[0]
-    #@movies = Movie.find :all, :order => @sort, :conditions => ":rating => ratings"
-    
     @movies = Movie.where(:rating => ratings)
     @movies = @movies.find :all, :order => @sort
-    
-    #@movies = Movie.find(:conditions => {:rating => , :order => @sort)
-    
-    
   end
 
   def new
