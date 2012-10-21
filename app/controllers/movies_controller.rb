@@ -8,13 +8,29 @@ class MoviesController < ApplicationController
 
   def index
     
+    flash[:notice] = params
+    
+    if !params.has_key?(:sort) && !params.has_key?(:ratings)
+      flash.keep
+      redirect_to movies_path :sort => params[:sort] || session[:sort], :ratings => params[:ratings] || session[:ratings] || Movie.all_ratings
+    end
+    
     @sort = params[:sort] || session[:sort] #retrieve sort field
     session[:sort] = @sort #stores in session[]
     
     @all_ratings = Movie.all_ratings
     if params[:ratings] != nil
-      session[:ratings] = params[:ratings].keys
+      if params[:ratings].class != Array
+        session[:ratings] = params[:ratings].keys
+      else
+        session[:ratings] = params[:ratings]
+      end
     end
+    
+    if session[:ratings] == nil
+      session[:ratings] = Movie.all_ratings
+    end
+    
     ratings = session[:ratings] || @all_ratings
     
     @ratings_checked = Hash.new
@@ -24,7 +40,6 @@ class MoviesController < ApplicationController
         @ratings_checked [rating] = 0
       end
     end
-    flash[:notice] = @ratings_checked
     
     
     #flash[:notice] = "Parameter #{params} was passed to the controller" #for debugging purposes
