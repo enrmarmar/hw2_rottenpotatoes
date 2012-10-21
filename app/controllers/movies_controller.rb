@@ -7,10 +7,33 @@ class MoviesController < ApplicationController
   end
 
   def index
-    field = params[:sort] #retrieve sort field
+     
+    @sort = params[:sort] #retrieve sort field
+    @all_ratings = Movie.all_ratings
+    ratings = @all_ratings
+    if params[:ratings] != nil
+      ratings = params[:ratings].keys
+    end
+    
+    @ratings_checked = Hash.new
+    @all_ratings.each do |rating|
+      @ratings_checked [rating] = 1
+      if !(ratings.include?(rating))
+        @ratings_checked [rating] = 0
+      end
+    end
+    
+    
     #flash[:notice] = "Parameter #{params} was passed to the controller" #for debugging purposes
-    @movies = Movie.order(field) #sort by field
-    @sort_column = field # pass back the field to the view
+    flash[:notice] = ratings[0]
+    #@movies = Movie.find :all, :order => @sort, :conditions => ":rating => ratings"
+    
+    @movies = Movie.where(:rating => ratings)
+    @movies = @movies.find :all, :order => @sort
+    
+    #@movies = Movie.find(:conditions => {:rating => , :order => @sort)
+    
+    
   end
 
   def new
