@@ -3,8 +3,8 @@
 
 %table#movies
   %thead
-    %tr#title_header
-      %th{:class => ('hilite' unless @sort_column != 'title')}
+    %tr
+      %th#title_header{:class => ('hilite' unless @sort_column != 'title')}
         = link_to 'Movie Title', :sort => 'title'
       %th Rating
       %th#release_date_header{:class => ('hilite' unless @sort_column != 'release_date')}
